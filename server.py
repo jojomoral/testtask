@@ -17,32 +17,15 @@ def application(environ, start_response):
     content_type = "text/html"
 
     if path == "/":
-        if method == "POST":
-            # getting wsgi.input obj
-            input_obj = environ["wsgi.input"]
-            # length of body
-            input_length = int(environ["CONTENT_LENGTH"])
-            # getting body of wsgi.input obj
-            # decoding to string
-            body = input_obj.read(input_length).decode()
-
-            # parsing body of form
-            data = urllib.parse.parse_qs(body, keep_blank_values=True)
-            # data of body in format
-            req = {
-                "name": data["name"][0],
-                "email": data["email"][0],
-                "type": data["f-type"][0],
-                "content": data["feedback"][0]
-            }
-            # adding to submission
-
-
-            response = b"Your feedback submitted successfully."
-            status = "200 OK"
+        pass
     elif path == "/users/":
         # reading html file
-        index = pages.users()
+        index = pages.show_users()
+        response = index.encode()
+        status = "200 OK"
+    elif path == "/users/add/":
+        # reading html file
+        index = pages.add_user()
         response = index.encode()
         status = "200 OK"
 
