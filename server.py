@@ -1,35 +1,39 @@
 import json
 import wsgiref.simple_server
-import urllib.parse
+from urllib.parse import unquote
 import os
 
 import pages
 import DB
 from CONFIG import DATABASE_PATH
 
-def application(environ, start_response):
-    # requested path
-    path = environ["PATH_INFO"]
-    # requested method
-    method = environ["REQUEST_METHOD"]
 
-    # content type of response
+def application(environ, start_response):
+    path = environ["PATH_INFO"]
+    method = environ["REQUEST_METHOD"]
     content_type = "text/html"
 
     if path == "/":
         pass
     elif path == "/users/":
-        # reading html file
+        if method == "POST":
+            try:
+                request_body_size = int(environ.get('CONTENT_LENGTH', 0))
+            except (ValueError):
+                request_body_size = 0
+            request_body = environ['wsgi.input'].read(request_body_size)
+            data = parse(request_body)
+            values = tuple(([value for value in data.values()])),
+
+            DB.insert_user(values)
         index = pages.show_users()
         response = index.encode()
         status = "200 OK"
     elif path == "/users/add/":
-        # reading html file
+
         index = pages.add_user()
         response = index.encode()
         status = "200 OK"
-
-
     else:
         # 404 - path not found
         response = b"<h1>Not found</h1><p>Entered path not found</p>"
@@ -43,6 +47,16 @@ def application(environ, start_response):
 
     start_response(status, headers)
     return [response]
+
+
+def parse(request):
+    request = unquote(request)
+    request = request.split('&')
+    data = {}
+    for item in request:
+        key, value = item.split('=')
+        data[key] = value
+    return data
 
 
 if __name__ == "__main__":

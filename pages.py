@@ -1,5 +1,6 @@
 import DB
 
+
 def show_users():
     users_data = DB.get_users(region_city_names=True)
     html = """
@@ -41,6 +42,7 @@ def show_users():
     """
 
     return html
+
 
 def add_user():
     regions = DB.get_regions()
@@ -103,17 +105,17 @@ def add_user():
 })();
 </script>
 
-    <form method = "POST" action="/cgi-bin/artists.py">
+    <form method = "POST" action="/users/">
         <input type="text" name="second_name" required placeholder="Фамилия">
         <input type="text" name="first_name" required placeholder="Имя">
         <input type="text" name="patronymic" placeholder="Отчество">
-        <select id="select-1">
+        <select name="region" id="select-1">
   <option value="select">Регион...</option>"""
     for row in regions:
         html += f"<option value='{row[0]}'>{row[1]}</option>"
 
     html += """</select>
-<select id="select-2">
+<select name="city" id="select-2">
   <option class="select" value="select">Город...</option>
 """
     for row in cities:

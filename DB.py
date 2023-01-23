@@ -2,6 +2,7 @@ import sqlite3
 
 from CONFIG import DATABASE_PATH
 
+
 def create_tables():
     sql = """
 CREATE TABLE regions (
@@ -49,33 +50,36 @@ FOREIGN KEY (city_id) REFERENCES cities(id)
     with sqlite3.connect(DATABASE_PATH) as conn:
         conn.executescript(sql)
         conn.commit()
-    insert_regions(regions_data)
-    insert_cities(cities_data)
-    insert_users(users_data)
+    insert_region(regions_data)
+    insert_city(cities_data)
+    insert_user(users_data)
 
 
-def insert_regions(data):
+def insert_region(data):
     with sqlite3.connect(DATABASE_PATH) as conn:
         sql = "INSERT INTO regions (id, region_name) VALUES (?, ?)"
         conn.executemany(sql, data)
         conn.commit()
 
-def insert_cities(data):
+
+def insert_city(data):
     with sqlite3.connect(DATABASE_PATH) as conn:
         sql = "INSERT INTO cities (id, region_id, city_name) VALUES (?, ?, ?)"
         conn.executemany(sql, data)
         conn.commit()
 
-def insert_users(data):
+
+def insert_user(data):
     with sqlite3.connect(DATABASE_PATH) as conn:
         sql = "INSERT INTO users (second_name, first_name, patronymic, region_id, city_id, phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)"
         conn.executemany(sql, data)
         conn.commit()
 
+
 def get_users(region_city_names = False):
     with sqlite3.connect(DATABASE_PATH) as conn:
         curs = conn.cursor()
-        if region_city_names == False:
+        if not region_city_names:
             sql = "SELECT * FROM users"
         else:
             sql = """
@@ -85,8 +89,8 @@ INNER JOIN cities ON users.city_id = cities.id
             """
         curs.execute(sql)
         data = curs.fetchall()
-        print(data)
         return data
+
 
 def get_regions():
     with sqlite3.connect(DATABASE_PATH) as conn:
@@ -95,6 +99,7 @@ def get_regions():
         curs.execute(sql)
         data = curs.fetchall()
         return data
+
 
 def get_cities():
     with sqlite3.connect(DATABASE_PATH) as conn:
