@@ -76,6 +76,22 @@ def insert_user(data):
         conn.commit()
 
 
+def get_region_id(region_name):
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        curs = conn.cursor()
+        sql = f"SELECT id FROM regions WHERE region_name = '{region_name}'"
+        curs.execute(sql)
+        data = curs.fetchone()
+        return data
+
+def get_city_id(city_name):
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        curs = conn.cursor()
+        sql = f"SELECT id FROM cities WHERE city_name = '{city_name}'"
+        curs.execute(sql)
+        data = curs.fetchone()
+        return data
+
 def get_users(region_city_names = False):
     with sqlite3.connect(DATABASE_PATH) as conn:
         curs = conn.cursor()
@@ -84,8 +100,8 @@ def get_users(region_city_names = False):
         else:
             sql = """
             SELECT users.id, second_name, first_name, patronymic, regions.region_name, cities.city_name, phone, email FROM users
-INNER JOIN regions ON users.region_id = regions.id
-INNER JOIN cities ON users.city_id = cities.id
+LEFT JOIN regions ON users.region_id = regions.id
+LEFT JOIN cities ON users.city_id = cities.id
             """
         curs.execute(sql)
         data = curs.fetchall()
