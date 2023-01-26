@@ -53,22 +53,27 @@ def application(environ, start_response):
                     fn = os.path.basename(fileitem.filename)
                     file_path = 'files/' + fn
                     open(file_path, 'wb').write(fileitem.file.read())
-                wb = openpyxl.load_workbook('files/users.xlsx')
+
+                wb = openpyxl.load_workbook(file_path)
                 ws = wb.active
                 data = []
+
                 for row in ws.iter_rows(min_row=2, min_col=2, values_only=True):
                     line = []
                     for item in row:
                         line.append(item)
                     data.append(line)
-                for row in data:
-                    if row[3] != None:
-                        row[3] = DB.get_region_id(row[3])[0]
-                    if row[4] != None:
-                        row[4] = DB.get_city_id(row[4])[0]
-                DB.insert_user(data)
 
-            index = pages.export_xlsx()
+                for row in data:
+                    if row[3] is not None:
+                        row[3] = DB.get_region_id(row[3])[0]
+                    if row[4] is not None:
+                        row[4] = DB.get_city_id(row[4])[0]
+
+                DB.insert_user(data)
+                index = pages.export_xlsx(message='xlsx успешно экспортирован')
+            else:
+                index = pages.export_xlsx()
             response = index.encode()
             status = "200 OK"
         elif path == "/users/downoload/xlsx/":
@@ -101,7 +106,6 @@ def application(environ, start_response):
             response = b"<h1>Not found</h1><p>Entered path not found</p>"
             status = "404 Not Found"
 
-
     headers = [
         ("Content-Type", content_type),
         ("Content-Length", str(len(response)))
@@ -112,9 +116,13 @@ def application(environ, start_response):
 
 
 if __name__ == "__main__":
+    if not os.path.exists('database'):
+        os.mkdir('database')
     if not os.path.exists(DATABASE_PATH):
         with open(DATABASE_PATH, 'w'):
             DB.create_tables()
+    if not os.path.exists('files'):
+        os.mkdir('files')
     w_s = wsgiref.simple_server.make_server(
         host="localhost",
         port=8080,

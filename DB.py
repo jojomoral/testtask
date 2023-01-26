@@ -84,6 +84,7 @@ def get_region_id(region_name):
         data = curs.fetchone()
         return data
 
+
 def get_city_id(city_name):
     with sqlite3.connect(DATABASE_PATH) as conn:
         curs = conn.cursor()
@@ -91,6 +92,7 @@ def get_city_id(city_name):
         curs.execute(sql)
         data = curs.fetchone()
         return data
+
 
 def get_users(region_city_names = False):
     with sqlite3.connect(DATABASE_PATH) as conn:

@@ -12,9 +12,9 @@ def show_users():
   <title>Нигматулин Руслан, тестовое задание</title>
 </head>
 <body>
-<a href="/users/add/"><h4 class="text-center mb-4">Добавить пользователя</h4></a>
-<a href="/users/downoload/xlsx/"><h4 class="text-center mb-4">Импорт xlsx</h4></a>
-<a href="/users/export/xlsx/"><h4 class="text-center mb-4">Экспорт xlsx</h4></a>
+<a href="/users/add/"><h4>Добавить пользователя</h4></a>
+<a href="/users/downoload/xlsx/"><h4>Импорт xlsx</h4></a>
+<a href="/users/export/xlsx/"><h4>Экспорт xlsx</h4></a>
 <table>
 <h1>users</h1>
 <thead>
@@ -102,11 +102,14 @@ def add_user():
   });
 })();
 </script>
-<a href="../"><h4 class="text-center mb-4">Назад</h4></a>
+<a href="../"><h4>Назад</h4></a>
     <form method = "POST" action="/users/">
-        <input type="text" name="second_name" required placeholder="Фамилия">
-        <input type="text" name="first_name" required placeholder="Имя">
-        <input type="text" name="patronymic" placeholder="Отчество">
+        <input type="text" name="second_name"  pattern="[A-Za-zА-Яа-яЁё]+" required placeholder="Фамилия">
+        <span class="form__error">Это поле должно содержать только буквы</span>
+        <input type="text" name="first_name" pattern="[A-Za-zА-Яа-яЁё]+" required placeholder="Имя">
+        <span class="form__error">Это поле должно содержать только буквы</span>
+        <input type="text" name="patronymic" pattern="[A-Za-zА-Яа-яЁё]+" placeholder="Отчество">
+        <span class="form__error">Это поле должно содержать только буквы</span>
         <select name="region" id="select-1">
   <option value="">Регион...</option>"""
     for row in regions:
@@ -121,8 +124,10 @@ def add_user():
 
     html += """
     </select>
-    <input type="tel" name="phone" placeholder="+7 999 999 99 99"  pattern="\+7\s?9[0-9]{2}\s?\d{3} \d{2} \d{2}">
+    <input type="tel" name="phone" placeholder="+7 999 999 99 99"  pattern="\+7 \s?[0-9]{3} \s?\d{3} \d{2} \d{2}">
+    <span class="form__error">Это поле должно содержать телефон в формате +7 999 999 99 99</span>
     <input type="email" name="email" placeholder="email">
+    <span class="form__error">Это поле должно содержать почту в формате example@site.ru</span>
         <input type="submit">
     </form>
 </body>
@@ -130,8 +135,8 @@ def add_user():
 """
     return html
 
-def export_xlsx():
-   html = """
+def export_xlsx(message=''):
+   html = f"""
     <html>
 <head>
 <meta charset="utf-8">
@@ -139,6 +144,8 @@ def export_xlsx():
 <link rel="stylesheet" href="../../../static/style.css">
 </head>
 <body>
+<h1>{message}</h1>
+<a href="../../"><h4>Назад</h4></a>
      <form enctype="multipart/form-data" method = "POST" action="">
     <input type="file" name="file" required placeholder="файл">
     <input type="submit">
